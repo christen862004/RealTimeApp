@@ -1,0 +1,52 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index web  Consumer</h1>
+
+<label>Name</label>
+<input id="name" name="name" class="form form-control" />
+
+<label>Message</label>
+<input id="Msg" name="Msg" class="form form-control" />
+
+
+<input class="btn btn-success" type="button" onclick="send()" value="Send Message"/>
+
+<ul id="Messages">
+
+</ul>
+
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/lib/microsoft-signalr/signalr.min.js"></script>
+<script>
+    //1) declare hub that i want to open connect
+    var hub = new signalR.HubConnectionBuilder().withUrl("\Chat").build();
+    //2) start Connection
+    hub.start().then(
+        function () {
+            console.log("Hub Connect opened Success");
+        }
+    );
+    //3) server notification iwant to handel 
+    hub.on("UserConnected", function (msg) { 
+        console.log(msg);
+    });
+
+    hub.on("NewMessageNotify", function (n, m) {
+        var list = $("#Messages")
+        list.append("<li>" + n + ":" + m + "</li>")
+    })
+    //4) iwant to sedn data to signal provider
+    function send() {
+        ////invoke metod from server
+        var name = $("#name").val();
+        var message = $("#Msg").val();
+        hub.invoke("NewMessageArrive", name, message);//,"10");
+    }
+</script>
+
+
+
