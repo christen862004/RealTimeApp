@@ -20,7 +20,9 @@
 
 
 <script src="~/lib/jquery/dist/jquery.js"></script>
-<script src="~/lib/microsoft-signalr/signalr.min.js"></script>
+@* <script src="~/lib/microsoft-signalr/signalr.min.js"></script> *@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js" 
+integrity="sha512-7SRCYIJtR6F8ocwW7UxW6wGKqbSyqREDbfCORCbGLatU0iugBLwyOXpzhkPyHIFdBO0K2VCu57fvP2Twgx1o2A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
     //1) declare hub that i want to open connect
     var hub = new signalR.HubConnectionBuilder().withUrl("\Chat").build();
@@ -30,21 +32,24 @@
             console.log("Hub Connect opened Success");
         }
     );
+
+
     //3) server notification iwant to handel 
     hub.on("UserConnected", function (msg) { 
         console.log(msg);
     });
 
-    hub.on("NewMessageNotify", function (n, m) {
+    hub.on("NewMessageNotify", function (obj) {//n, m) {
         var list = $("#Messages")
-        list.append("<li>" + n + ":" + m + "</li>")
+        list.append("<li>" + obj.name + ":" + obj.text + "</li>")
     })
     //4) iwant to sedn data to signal provider
     function send() {
         ////invoke metod from server
         var name = $("#name").val();
         var message = $("#Msg").val();
-        hub.invoke("NewMessageArrive", name, message);//,"10");
+        var obj = {"name": name, "text": message };
+        hub.invoke("NewMessageArrive", obj);//name, message);//,"10");
     }
 </script>
 
